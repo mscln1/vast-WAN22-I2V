@@ -1,14 +1,37 @@
 #!/bin/bash
+set -e
 
 # =================================================================
 # --- VAST.AI MASTER ON-START SCRIPT ---
 # =================================================================
 
-echo "=== Starting Custom Vast.ai Setup ==="
-echo "NOTE: This runs AFTER the default provisioning completes"
+echo "=== Custom Vast.ai Setup Starting ==="
 echo ""
 
-# 1. CHECK FOR THE CIVITAI API TOKEN
+# 1. WAIT FOR DEFAULT PROVISIONING TO COMPLETE
+# =================================================================
+echo "--> Waiting for default ComfyUI provisioning to complete..."
+
+MAX_WAIT=600  # 10 minutes max
+ELAPSED=0
+
+# Wait for ComfyUI to be fully installed
+while [ ! -f "/workspace/ComfyUI/main.py" ]; do
+    if [ $ELAPSED -ge $MAX_WAIT ]; then
+        echo "!!! ERROR: Timeout waiting for ComfyUI installation"
+        exit 1
+    fi
+    echo "    Still waiting... (${ELAPSED}s elapsed)"
+    sleep 10
+    ELAPSED=$((ELAPSED + 10))
+done
+
+echo "--> ComfyUI installation detected. Waiting an additional 30s for cleanup..."
+sleep 30
+echo "--> Default provisioning complete!"
+echo ""
+
+# 2. CHECK FOR THE CIVITAI API TOKEN
 # =================================================================
 if [ -z "${CIVITAI_API_TOKEN}" ]; then
     echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
@@ -18,45 +41,45 @@ if [ -z "${CIVITAI_API_TOKEN}" ]; then
 else
     echo "--> Civitai API token found. Proceeding with setup."
 fi
-echo
+echo ""
 
-# 2. PREPARE THE SYSTEM
+# 3. PREPARE THE SYSTEM
 # =================================================================
 echo "--> Updating package lists and installing dos2unix..."
 apt-get update > /dev/null 2>&1
 apt-get install -y dos2unix > /dev/null 2>&1
 echo "--> System prepared."
-echo
+echo ""
 
-# 3. DOWNLOAD YOUR CUSTOM SCRIPTS
+# 4. DOWNLOAD YOUR CUSTOM SCRIPTS
 # =================================================================
 echo "--> Downloading custom setup scripts from GitHub..."
 wget -O /workspace/vast_setup.sh https://raw.githubusercontent.com/mscln1/vast-WAN22-I2V/refs/heads/main/vast_setup.sh
 wget -O /workspace/install_sage_vast.sh https://raw.githubusercontent.com/mscln1/vast-WAN22-I2V/refs/heads/main/install_sage_vast.sh
 wget -O /workspace/manual_start_comfy_sage.sh https://raw.githubusercontent.com/mscln1/vast-WAN22-I2V/refs/heads/main/manual_start_comfy_sage.sh
 echo "--> All scripts downloaded."
-echo
+echo ""
 
-# 4. FIX LINE ENDINGS AND MAKE EXECUTABLE
+# 5. FIX LINE ENDINGS AND MAKE EXECUTABLE
 # =================================================================
 echo "--> Fixing line endings and setting permissions..."
 dos2unix /workspace/*.sh 2>/dev/null
 chmod +x /workspace/*.sh
 echo "--> Scripts are ready to execute."
-echo
+echo ""
 
-# 5. EXECUTE YOUR SCRIPTS IN ORDER
+# 6. EXECUTE YOUR SCRIPTS IN ORDER
 # =================================================================
 echo "--- EXECUTING SCRIPT 1: vast_setup.sh ---"
 /workspace/vast_setup.sh
-echo
+echo ""
 
 echo "--- EXECUTING SCRIPT 2: install_sage_vast.sh ---"
 /workspace/install_sage_vast.sh
-echo
+echo ""
 
 echo "--- EXECUTING SCRIPT 3: manual_start_comfy_sage.sh ---"
 /workspace/manual_start_comfy_sage.sh
-echo
+echo ""
 
-echo "--- CUSTOM SETUP COMPLETE ---"
+echo "=== CUSTOM SETUP COMPLETE ==="
