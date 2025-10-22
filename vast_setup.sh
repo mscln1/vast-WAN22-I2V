@@ -100,8 +100,8 @@ setup_custom_nodes() {
 # This function will run in the foreground, downloading one file at a time.
 download_wan_models() {
     echo "-> Starting sequential base model downloads..."
-    download_file "https://huggingface.co/QuantStack/Wan2.2-I2V-A14B-GGUF/resolve/main/HighNoise/Wan2.2-I2V-A14B-HighNoise-Q8_0.gguf" "${COMFYUI_BASE_PATH}/models/unet/Wan2.2-I2V-A14B-HighNoise-Q8_0.gguf"
-    download_file "https://huggingface.co/QuantStack/Wan2.2-I2V-A14B-GGUF/resolve/main/LowNoise/Wan2.2-I2V-A14B-LowNoise-Q8_0.gguf" "${COMFYUI_BASE_PATH}/models/unet/Wan2.2-I2V-A14B-LowNoise-Q8_0.gguf"
+    download_file "https://huggingface.co/QuantStack/Wan2.2-I2V-A14B-GGUF/resolve/main/HighNoise/Wan2.2-I2V-A14B-HighNoise-Q8_0.gguf" "${COMFYUI_BASE_PATH}/models/diffusion_models/Wan2.2-I2V-A14B-HighNoise-Q8_0.gguf"
+    download_file "https://huggingface.co/QuantStack/Wan2.2-I2V-A14B-GGUF/resolve/main/LowNoise/Wan2.2-I2V-A14B-LowNoise-Q8_0.gguf" "${COMFYUI_BASE_PATH}/models/diffusion_models/Wan2.2-I2V-A14B-LowNoise-Q8_0.gguf"
     download_file "https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/resolve/main/split_files/vae/wan_2.1_vae.safetensors" "${COMFYUI_BASE_PATH}/models/vae/wan_2.1_vae.safetensors"
     download_file "https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/resolve/main/split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors" "${COMFYUI_BASE_PATH}/models/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors"
     download_file "https://huggingface.co/Kijai/WanVideo_comfy/resolve/main/Wan2_1_VAE_bf16.safetensors" "${COMFYUI_BASE_PATH}/models/vae/Wan2_1_VAE_bf16.safetensors"
@@ -112,8 +112,8 @@ download_qwen_models() {
     echo "-> Starting sequential Qwen base model downloads..."
     mkdir -p "${COMFYUI_BASE_PATH}/models/loras/qwen"
     # NOTE: Replace these with the actual Qwen model URLs and paths you need
-    download_file "https://huggingface.co/QuantStack/Qwen-Image-Edit-2509-GGUF/resolve/main/Qwen-Image-Edit-2509-Q8_0.gguf" "${COMFYUI_BASE_PATH}/models/diffusion_models/qwen.tiktoken"
-    download_file "https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI/resolve/main/split_files/text_encoders/qwen_2.5_vl_7b_fp8_scaled.safetensors" "${COMFYUI_BASE_PATH}/models/text_encoders/qwen-visual.safetensors"
+    download_file "https://huggingface.co/QuantStack/Qwen-Image-Edit-2509-GGUF/resolve/main/Qwen-Image-Edit-2509-Q8_0.gguf" "${COMFYUI_BASE_PATH}/models/diffusion_models/Qwen-Image-Edit-2509-Q8_0.gguf"
+    download_file "https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI/resolve/main/split_files/text_encoders/qwen_2.5_vl_7b_fp8_scaled.safetensors" "${COMFYUI_BASE_PATH}/models/text_encoders/qwen_2.5_vl_7b_fp8_scaled.safetensors"
     download_file "https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI/resolve/main/split_files/vae/qwen_image_vae.safetensors" "${COMFYUI_BASE_PATH}/models/vae/qwen_image_vae.safetensors"
     download_file "https://huggingface.co/lightx2v/Qwen-Image-Lightning/resolve/main/Qwen-Image-Lightning-4steps-V1.0.safetensors" "${COMFYUI_BASE_PATH}/models/loras/qwen/Qwen-Image-Lightning-4steps-V1.0.safetensors"
     echo "--- Qwen base model downloads complete. ---"
@@ -130,7 +130,7 @@ COMFYUI_BASE_PATH="/workspace/ComfyUI"
 PYTHON_EXEC="/venv/main/bin/python3"
 
 # Create model directories if they don't exist
-# mkdir -p "${COMFYUI_BASE_PATH}/models/unet"
+# mkdir -p "${COMFYUI_BASE_PATH}/models/diffusion_models"
 # mkdir -p "${COMFYUI_BASE_PATH}/models/loras"
 # mkdir -p "${COMFYUI_BASE_PATH}/models/vae"
 # mkdir -p "${COMFYUI_BASE_PATH}/models/text_encoders"
@@ -171,16 +171,18 @@ if [[ "$MODEL_SETS" == *"wan"* ]]; then
 
 
     # --- Configuration ---
-    LORA_DIR="${COMFYUI_BASE_PATH}/models/loras"
+    mkdir -p "${COMFYUI_BASE_PATH}/models/loras/wan22"
+    LORA_DIR="${COMFYUI_BASE_PATH}/models/loras/wan22"
     FAILED_DOWNLOADS=()
 
-    # 1. Create subdirectories for LoRA models
+    # 1. Create subdirectories for WAN LoRA models
     echo "Creating subdirectories..."
     mkdir -p "$LORA_DIR/lightning"
     mkdir -p "$LORA_DIR/camera"
-    mkdir -p "$LORA_DIR/trap"
-    mkdir -p "$LORA_DIR/moneyshot"
+    mkdir -p "$LORA_DIR/futa"
+    mkdir -p "$LORA_DIR/oral"
     mkdir -p "$LORA_DIR/sex"
+    mkdir -p "$LORA_DIR/general"
     echo "Subdirectories are ready."
     echo
 
@@ -193,35 +195,39 @@ if [[ "$MODEL_SETS" == *"wan"* ]]; then
     download_and_check "https://huggingface.co/Kijai/WanVideo_comfy/resolve/main/LoRAs/Wan22_Lightx2v/Wan_2_2_I2V_A14B_HIGH_lightx2v_MoE_distill_lora_rank_64_bf16.safetensors" "Wan2.2_I2V_HIGH_MoE" -O "$LORA_DIR/lightning/Wan22_I2V_A14B_HIGH_lightx2v_MoE_distill_lora_rank_64_bf16.safetensors"
 
     echo "--- Downloading Civitai LoRAs ---"
+    
+    ## these go in loras/general
+    download_and_check "https://civitai.com/api/download/models/2295670?token=${CIVITAI_API_TOKEN}" "WAN2.2_SmartphoneSnapshotPhotoReality_v5_by-AI_Characters_high+low_noise" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/general"
+    
     ## These go in /loras/camera
     download_and_check "https://civitai.com/api/download/models/2126538?token=${CIVITAI_API_TOKEN}" "Camera Tilt-up LOW" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/camera"
     download_and_check "https://civitai.com/api/download/models/2126493?token=${CIVITAI_API_TOKEN}" "Camera Tilt-up HIGH" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/camera"
 
-    ## These go in /loras/trap
-    download_and_check "https://civitai.com/api/download/models/2321871?token=${CIVITAI_API_TOKEN}" "FutaTF HIGH" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/trap"
-    download_and_check "https://civitai.com/api/download/models/2321878?token=${CIVITAI_API_TOKEN}" "FutaTF LOW" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/trap"
+    ## These go in /loras/futa
+    download_and_check "https://civitai.com/api/download/models/2321871?token=${CIVITAI_API_TOKEN}" "FutaTF HIGH" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/futa"
+    download_and_check "https://civitai.com/api/download/models/2321878?token=${CIVITAI_API_TOKEN}" "FutaTF LOW" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/futa"
 
-    ## These go in /loras/moneyshot
-    download_and_check "https://civitai.com/api/download/models/2221382?token=${CIVITAI_API_TOKEN}" "Wan22_Cum HIGH" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/moneyshot"
-    download_and_check "https://civitai.com/api/download/models/2221988?token=${CIVITAI_API_TOKEN}" "Wan22_Cum LOW" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/moneyshot"
-    download_and_check "https://civitai.com/api/download/models/2277597?token=${CIVITAI_API_TOKEN}" "I2V_tongueout LOW" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/moneyshot"
-    download_and_check "https://civitai.com/api/download/models/2277578?token=${CIVITAI_API_TOKEN}" "I2V_tongueout HIGH" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/moneyshot"
-    download_and_check "https://civitai.com/api/download/models/2290038?token=${CIVITAI_API_TOKEN}" "Wan22_Throat HIGH" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/moneyshot"
-    download_and_check "https://civitai.com/api/download/models/2290065?token=${CIVITAI_API_TOKEN}" "Wan22_Throat LOW" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/moneyshot"
-    download_and_check "https://civitai.com/api/download/models/2235299?token=${CIVITAI_API_TOKEN}" "DR34MJOB HIGH" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/moneyshot"
-    download_and_check "https://civitai.com/api/download/models/2235288?token=${CIVITAI_API_TOKEN}" "DR34MJOB LOW" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/moneyshot"
-    download_and_check "https://civitai.com/api/download/models/2152516?token=${CIVITAI_API_TOKEN}" "jfj-deepthroat HIGH" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/moneyshot"
-    download_and_check "https://civitai.com/api/download/models/2152583?token=${CIVITAI_API_TOKEN}" "jfj-deepthroat LOW" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/moneyshot"
-    download_and_check "https://civitai.com/api/download/models/2193369?token=${CIVITAI_API_TOKEN}" "I2V Blowjob HIGH" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/moneyshot"
-    download_and_check "https://civitai.com/api/download/models/2193373?token=${CIVITAI_API_TOKEN}" "I2V Blowjob LOW" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/moneyshot"
-    download_and_check "https://civitai.com/api/download/models/2087173?token=${CIVITAI_API_TOKEN}" "pworship HIGH" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/moneyshot"
-    download_and_check "https://civitai.com/api/download/models/2087124?token=${CIVITAI_API_TOKEN}" "pworship LOW" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/moneyshot"
-    download_and_check "https://civitai.com/api/download/models/2178869?token=${CIVITAI_API_TOKEN}" "f4c3spl4sh LOW" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/moneyshot"
-    download_and_check "https://civitai.com/api/download/models/2176450?token=${CIVITAI_API_TOKEN}" "f4c3spl4sh HIGH" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/moneyshot"
-    download_and_check "https://civitai.com/api/download/models/2122049?token=${CIVITAI_API_TOKEN}" "ultimatedeepthroat HIGH" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/moneyshot"
-    download_and_check "https://civitai.com/api/download/models/2191446?token=${CIVITAI_API_TOKEN}" "ultimatedeepthroat LOW" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/moneyshot"
-    download_and_check "https://civitai.com/api/download/models/2164213?token=${CIVITAI_API_TOKEN}" "Double-Blowjob HIGH" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/moneyshot"
-    download_and_check "https://civitai.com/api/download/models/2164348?token=${CIVITAI_API_TOKEN}" "Double-Blowjob LOW" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/moneyshot"
+    ## These go in /loras/oral
+    download_and_check "https://civitai.com/api/download/models/2221382?token=${CIVITAI_API_TOKEN}" "Wan22_Cum HIGH" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/oral"
+    download_and_check "https://civitai.com/api/download/models/2221988?token=${CIVITAI_API_TOKEN}" "Wan22_Cum LOW" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/oral"
+    download_and_check "https://civitai.com/api/download/models/2277597?token=${CIVITAI_API_TOKEN}" "I2V_tongueout LOW" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/oral"
+    download_and_check "https://civitai.com/api/download/models/2277578?token=${CIVITAI_API_TOKEN}" "I2V_tongueout HIGH" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/oral"
+    download_and_check "https://civitai.com/api/download/models/2290038?token=${CIVITAI_API_TOKEN}" "Wan22_Throat HIGH" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/oral"
+    download_and_check "https://civitai.com/api/download/models/2290065?token=${CIVITAI_API_TOKEN}" "Wan22_Throat LOW" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/oral"
+    download_and_check "https://civitai.com/api/download/models/2235299?token=${CIVITAI_API_TOKEN}" "DR34MJOB HIGH" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/oral"
+    download_and_check "https://civitai.com/api/download/models/2235288?token=${CIVITAI_API_TOKEN}" "DR34MJOB LOW" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/oral"
+    download_and_check "https://civitai.com/api/download/models/2152516?token=${CIVITAI_API_TOKEN}" "jfj-deepthroat HIGH" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/oral"
+    download_and_check "https://civitai.com/api/download/models/2152583?token=${CIVITAI_API_TOKEN}" "jfj-deepthroat LOW" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/oral"
+    download_and_check "https://civitai.com/api/download/models/2193369?token=${CIVITAI_API_TOKEN}" "I2V Blowjob HIGH" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/oral"
+    download_and_check "https://civitai.com/api/download/models/2193373?token=${CIVITAI_API_TOKEN}" "I2V Blowjob LOW" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/oral"
+    download_and_check "https://civitai.com/api/download/models/2087173?token=${CIVITAI_API_TOKEN}" "pworship HIGH" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/oral"
+    download_and_check "https://civitai.com/api/download/models/2087124?token=${CIVITAI_API_TOKEN}" "pworship LOW" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/oral"
+    download_and_check "https://civitai.com/api/download/models/2178869?token=${CIVITAI_API_TOKEN}" "f4c3spl4sh LOW" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/oral"
+    download_and_check "https://civitai.com/api/download/models/2176450?token=${CIVITAI_API_TOKEN}" "f4c3spl4sh HIGH" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/oral"
+    download_and_check "https://civitai.com/api/download/models/2122049?token=${CIVITAI_API_TOKEN}" "ultimatedeepthroat HIGH" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/oral"
+    download_and_check "https://civitai.com/api/download/models/2191446?token=${CIVITAI_API_TOKEN}" "ultimatedeepthroat LOW" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/oral"
+    download_and_check "https://civitai.com/api/download/models/2164213?token=${CIVITAI_API_TOKEN}" "Double-Blowjob HIGH" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/oral"
+    download_and_check "https://civitai.com/api/download/models/2164348?token=${CIVITAI_API_TOKEN}" "Double-Blowjob LOW" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/oral"
 
     ## These go in /loras/sex
     download_and_check "https://civitai.com/api/download/models/2073605?token=${CIVITAI_API_TOKEN}" "NSFW-22 HIGH" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/sex"
@@ -259,15 +265,75 @@ if [[ "$MODEL_SETS" == *"wan"* ]]; then
             echo "  - $item"
         done
     else
-        echo "All LoRA models were downloaded successfully."
+        echo "All WAN LoRA models were downloaded successfully."
     fi
     echo
 fi # This 'fi' closes the conditional block for WAN LoRAs
 
+if [[ "$MODEL_SETS" == *"qwen"* ]]; then
+    echo
+    echo "--- Starting Sequential Download of qwen-specific LoRA Models ---"
+
+
+
+    # --- Configuration ---
+    mkdir -p "${COMFYUI_BASE_PATH}/models/loras/qwen"
+    mkdir -p "${COMFYUI_BASE_PATH}/models/loras/qwen/general"
+    mkdir -p "${COMFYUI_BASE_PATH}/models/loras/qwen/nsfw"
+    LORA_DIR="${COMFYUI_BASE_PATH}/models/loras/qwen"
+    FAILED_DOWNLOADS=()
+
+    # 2. Download all models sequentially
+
+    echo "--- Downloading Civitai qwen LoRAs ---"
+    ## These go in /loras/qwen/general
+
+    download_and_check "https://civitai.com/api/download/models/2270374?token=${CIVITAI_API_TOKEN}" "Samsung" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/general"
+    download_and_check "https://civitai.com/api/download/models/2256755?token=${CIVITAI_API_TOKEN}" "consistence_edit_v2" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/general"
+    download_and_check "https://civitai.com/api/download/models/2179228?token=${CIVITAI_API_TOKEN}" "qwen_image_snapchat" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/general"
+    download_and_check "https://civitai.com/api/download/models/2196278?token=${CIVITAI_API_TOKEN}" "clothes_tryon_qwen-edit-lora" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/general"
+    download_and_check "https://civitai.com/api/download/models/2289403?token=${CIVITAI_API_TOKEN}" "Qwen-Image_SmartphoneSnapshotPhotoReality_v4_by-AI_Characters_TRIGGER$amateur photo$" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/general"
+
+    ## These go in /loras/qwen/nsfw
+    download_and_check "https://civitai.com/api/download/models/2183622?token=${CIVITAI_API_TOKEN}" "QWEN_jtn_barbell" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/nsfw"
+    download_and_check "https://civitai.com/api/download/models/2160909?token=${CIVITAI_API_TOKEN}" "ghostnipples1" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/nsfw"
+    download_and_check "https://civitai.com/api/download/models/2217791?token=${CIVITAI_API_TOKEN}" "[QWEN] Send Nudes Pro - Beta v1" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/nsfw"
+    download_and_check "https://civitai.com/api/download/models/2310533?token=${CIVITAI_API_TOKEN}" "QwenSnofs1_1" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/nsfw"
+    download_and_check "https://civitai.com/api/download/models/2105899?token=${CIVITAI_API_TOKEN}" "qwen_MCNL_v1.0" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/nsfw"
+
+    # 3. Unzip any downloaded archives
+    echo "--- Searching for and extracting .zip files ---"
+    find "$LORA_DIR" -type f -name "*.zip" | while read -r file; do
+        echo "Found zip file: $file"
+        unzip -o "$file" -d "$(dirname "$file")"
+        if [ $? -eq 0 ]; then
+            echo "Successfully unzipped. Deleting archive..."
+            rm "$file"
+        else
+            echo "!!! Failed to unzip $file. The archive will not be deleted."
+        fi
+    done
+    echo "Zip file processing complete."
+    echo
+
+    # 4. Report final status
+    echo "--- Download Summary ---"
+    if [ ${#FAILED_DOWNLOADS[@]} -ne 0 ]; then
+        echo "The following downloads FAILED:"
+        for item in "${FAILED_DOWNLOADS[@]}"; do
+            echo "  - $item"
+        done
+    else
+        echo "All qwen LoRA models were downloaded successfully."
+    fi
+    echo
+fi # This 'fi' closes the conditional block for qwen LoRAs
+
+
 # =================================================================
 # --- FINAL INSTRUCTIONS ---
 # =================================================================
-echo "=== RTX 5090 GGUF Q8 Setup Complete! ==="
+echo "=== Custom Vast Setup Complete! ==="
 echo "Next steps:"
 echo "1. Ensure you have already run the package alignment and SageAttention install scripts."
 echo "2. Restart the ComfyUI container/process."
