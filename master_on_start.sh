@@ -18,8 +18,8 @@ apt-get update > /dev/null 2>&1
 apt-get install -y dos2unix > /dev/null 2>&1
 echo ""
 
-# Ensure the target directory exists before changing to it
-mkdir -p /workspace
+## Ensure the target directory exists before changing to it
+## mkdir -p /workspace
 
 # Download scripts
 echo "→ Downloading custom scripts..."
