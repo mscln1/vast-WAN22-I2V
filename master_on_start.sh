@@ -1,85 +1,48 @@
 #!/bin/bash
 set -e
 
-# =================================================================
-# --- VAST.AI MASTER ON-START SCRIPT ---
-# =================================================================
-
-echo "=== Custom Vast.ai Setup Starting ==="
+echo "=== Custom Setup Starting (after default provisioning) ==="
 echo ""
 
-# 1. WAIT FOR DEFAULT PROVISIONING TO COMPLETE
-# =================================================================
-echo "--> Waiting for default ComfyUI provisioning to complete..."
-
-MAX_WAIT=600  # 10 minutes max
-ELAPSED=0
-
-# Wait for ComfyUI to be fully installed
-while [ ! -f "/workspace/ComfyUI/main.py" ]; do
-    if [ $ELAPSED -ge $MAX_WAIT ]; then
-        echo "!!! ERROR: Timeout waiting for ComfyUI installation"
-        exit 1
-    fi
-    echo "    Still waiting... (${ELAPSED}s elapsed)"
-    sleep 10
-    ELAPSED=$((ELAPSED + 10))
-done
-
-echo "--> ComfyUI installation detected. Waiting an additional 30s for cleanup..."
-sleep 30
-echo "--> Default provisioning complete!"
-echo ""
-
-# 2. CHECK FOR THE CIVITAI API TOKEN
-# =================================================================
+# Check for API token
 if [ -z "${CIVITAI_API_TOKEN}" ]; then
-    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-    echo "!!! WARNING: CIVITAI_API_TOKEN environment variable is not set.            !!!"
-    echo "!!! Downloads from Civitai will likely fail. Please add it to the template.!!!"
-    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    echo "!!! WARNING: CIVITAI_API_TOKEN not set"
 else
-    echo "--> Civitai API token found. Proceeding with setup."
+    echo "✓ Civitai API token found"
 fi
 echo ""
 
-# 3. PREPARE THE SYSTEM
-# =================================================================
-echo "--> Updating package lists and installing dos2unix..."
+# Install dos2unix
+echo "→ Installing dos2unix..."
 apt-get update > /dev/null 2>&1
 apt-get install -y dos2unix > /dev/null 2>&1
-echo "--> System prepared."
 echo ""
 
-# 4. DOWNLOAD YOUR CUSTOM SCRIPTS
-# =================================================================
-echo "--> Downloading custom setup scripts from GitHub..."
-wget -O /workspace/vast_setup.sh https://raw.githubusercontent.com/mscln1/vast-WAN22-I2V/refs/heads/main/vast_setup.sh
-wget -O /workspace/install_sage_vast.sh https://raw.githubusercontent.com/mscln1/vast-WAN22-I2V/refs/heads/main/install_sage_vast.sh
-wget -O /workspace/manual_start_comfy_sage.sh https://raw.githubusercontent.com/mscln1/vast-WAN22-I2V/refs/heads/main/manual_start_comfy_sage.sh
-echo "--> All scripts downloaded."
+# Download scripts
+echo "→ Downloading custom scripts..."
+cd /workspace
+wget -q -O vast_setup.sh https://raw.githubusercontent.com/mscln1/vast-WAN22-I2V/refs/heads/main/vast_setup.sh
+wget -q -O install_sage_vast.sh https://raw.githubusercontent.com/mscln1/vast-WAN22-I2V/refs/heads/main/install_sage_vast.sh
+wget -q -O manual_start_comfy_sage.sh https://raw.githubusercontent.com/mscln1/vast-WAN22-I2V/refs/heads/main/manual_start_comfy_sage.sh
 echo ""
 
-# 5. FIX LINE ENDINGS AND MAKE EXECUTABLE
-# =================================================================
-echo "--> Fixing line endings and setting permissions..."
-dos2unix /workspace/*.sh 2>/dev/null
-chmod +x /workspace/*.sh
-echo "--> Scripts are ready to execute."
+# Prepare scripts
+echo "→ Preparing scripts..."
+dos2unix *.sh 2>/dev/null
+chmod +x *.sh
 echo ""
 
-# 6. EXECUTE YOUR SCRIPTS IN ORDER
-# =================================================================
-echo "--- EXECUTING SCRIPT 1: vast_setup.sh ---"
-/workspace/vast_setup.sh
+# Execute scripts
+echo "--- EXECUTING: vast_setup.sh ---"
+./vast_setup.sh
 echo ""
 
-echo "--- EXECUTING SCRIPT 2: install_sage_vast.sh ---"
-/workspace/install_sage_vast.sh
+echo "--- EXECUTING: install_sage_vast.sh ---"
+./install_sage_vast.sh
 echo ""
 
-echo "--- EXECUTING SCRIPT 3: manual_start_comfy_sage.sh ---"
-/workspace/manual_start_comfy_sage.sh
+echo "--- EXECUTING: manual_start_comfy_sage.sh ---"
+./manual_start_comfy_sage.sh
 echo ""
 
-echo "=== CUSTOM SETUP COMPLETE ==="
+echo "=== Custom Setup Complete ==="
