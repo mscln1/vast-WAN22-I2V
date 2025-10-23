@@ -1,8 +1,29 @@
 #!/bin/bash
 set -e
 
-echo "=== Custom Setup Starting (after default provisioning) ==="
-echo ""
+
+# =================================================================
+# --- STEP 1: WAIT FOR THE OFFICIAL INSTALLATION TO COMPLETE ---
+# We wait for the final file-based action of the provisioning script:
+# the download of a checkpoint model. We do this by checking if the
+# checkpoints directory is no longer empty.
+# =================================================================
+
+CHECKPOINTS_DIR="/workspace/ComfyUI/models/checkpoints"
+
+echo "--- [CUSTOM] Waiting for the default ComfyUI installation to complete... ---"
+echo "--- [CUSTOM] (Will proceed once a model appears in '${CHECKPOINTS_DIR}') ---"
+
+# This loop will continue as long as the checkpoints directory is empty.
+# 'ls -A' lists all files including hidden ones. If it produces any output,
+# the directory is not empty, and the loop stops.
+while [ -z "$(ls -A ${CHECKPOINTS_DIR} 2>/dev/null)" ]; do
+  # Sleep for 3 seconds between checks.
+  sleep 3
+done
+
+echo "✓ [CUSTOM] Default ComfyUI installation is 100% complete. Proceeding with custom setup."
+echo
 
 print_art() {
 cat << 'EOF'
@@ -65,6 +86,18 @@ echo "==========================================================================
 
 # --- SCRIPT START ---
 
+# --- Initial Configuration ---
+COMFYUI_BASE_PATH="/workspace/ComfyUI"
+PYTHON_EXEC="/venv/main/bin/python3"
+
+# --- NEW: Wait for the default ComfyUI installation to complete ---
+echo "→ [CUSTOM] Waiting for the default ComfyUI installation to finish..."
+while [ ! -f "${COMFYUI_BASE_PATH}/main.py" ]; do
+  sleep 2
+done
+echo "✓ [CUSTOM] Default ComfyUI installation detected. Proceeding with custom setup."
+echo
+
 print_art
 echo "=== [CUSTOM] Master Setup Initializing... ==="
 echo ""
@@ -82,9 +115,6 @@ echo "→ Installing dos2unix..."
 apt-get update > /dev/null 2>&1
 apt-get install -y dos2unix > /dev/null 2>&1
 echo ""
-
-## Ensure the target directory exists before changing to it
-## mkdir -p /workspace
 
 # Download scripts
 echo "→ Downloading custom scripts..."
