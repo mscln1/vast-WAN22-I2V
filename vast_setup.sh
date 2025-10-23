@@ -19,8 +19,8 @@ download_file() {
     URL="$1"
     OUTPUT_PATH="$2"
     echo "Downloading: $(basename "$OUTPUT_PATH")"
-    # Using --quiet and --show-progress for a cleaner download bar
-    wget --quiet --show-progress "$URL" -O "$OUTPUT_PATH"
+    # Using --quiet for clean output
+    wget --quiet "$URL" -O "$OUTPUT_PATH"
     if [ $? -ne 0 ]; then
         echo "ERROR: Failed to download from $URL"
     fi
@@ -34,7 +34,7 @@ download_and_check() {
     shift 2 # Removes the first two arguments, leaving the rest for wget
 
     echo "--> Downloading: $description"
-    if ! wget --quiet --show-progress "$@" "$url"; then
+    if ! wget --quiet "$@" "$url"; then
         echo "!!! FAILED: $description"
         FAILED_DOWNLOADS+=("$description from $url")
         echo # Add a newline for readability
