@@ -68,6 +68,8 @@ setup_custom_nodes() {
     # Clone all repositories in the background concurrently
     clone_repo https://github.com/city96/ComfyUI-GGUF.git &
     clone_repo https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite.git &
+    clone_repo https://github.com/yolain/ComfyUI-Easy-Use.git &
+    clone_repo https://github.com/ltdrdata/ComfyUI-Impact-Pack.git &
     clone_repo https://github.com/ltdrdata/was-node-suite-comfyui.git &
     clone_repo https://github.com/kijai/ComfyUI-WanVideoWrapper.git &
     clone_repo https://github.com/cubiq/ComfyUI_essentials.git &
@@ -81,6 +83,11 @@ setup_custom_nodes() {
     clone_repo https://github.com/stduhpf/ComfyUI-WanMoeKSampler.git &
     clone_repo https://github.com/crystian/ComfyUI-Crystools.git &
     clone_repo https://github.com/willmiao/ComfyUI-Lora-Manager.git &
+    clone_repo https://github.com/lrzjason/Comfyui-QwenEditUtils.git &
+	clone_repo https://github.com/ClownsharkBatwing/RES4LYF.git &
+    clone_repo https://github.com/yuvraj108c/ComfyUI-Rife-Tensorrt &
+    clone_repo https://github.com/fuselayer/comfyui-ez-dl &
+
 
     # Wait for all clone jobs to finish before proceeding to install requirements
     wait
@@ -115,7 +122,8 @@ download_qwen_models() {
     download_file "https://huggingface.co/QuantStack/Qwen-Image-Edit-2509-GGUF/resolve/main/Qwen-Image-Edit-2509-Q8_0.gguf" "${COMFYUI_BASE_PATH}/models/diffusion_models/Qwen-Image-Edit-2509-Q8_0.gguf"
     download_file "https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI/resolve/main/split_files/text_encoders/qwen_2.5_vl_7b_fp8_scaled.safetensors" "${COMFYUI_BASE_PATH}/models/text_encoders/qwen_2.5_vl_7b_fp8_scaled.safetensors"
     download_file "https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI/resolve/main/split_files/vae/qwen_image_vae.safetensors" "${COMFYUI_BASE_PATH}/models/vae/qwen_image_vae.safetensors"
-    download_file "https://huggingface.co/lightx2v/Qwen-Image-Lightning/resolve/main/Qwen-Image-Lightning-4steps-V1.0.safetensors" "${COMFYUI_BASE_PATH}/models/loras/qwen/Qwen-Image-Lightning-4steps-V1.0.safetensors"
+    download_file "https://huggingface.co/lightx2v/Qwen-Image-Lightning/resolve/main/Qwen-Image-Edit-2509/Qwen-Image-Edit-2509-Lightning-4steps-V1.0-bf16.safetensors" "${COMFYUI_BASE_PATH}/models/loras/qwen/Qwen-Image-Edit-2509-Lightning-4steps-V1.0-bf16.safetensors"
+    download_file "https://huggingface.co/lightx2v/Qwen-Image-Lightning/resolve/main/Qwen-Image-Edit-2509/Qwen-Image-Edit-2509-Lightning-8steps-V1.0-bf16.safetensors" "${COMFYUI_BASE_PATH}/models/loras/qwen/Qwen-Image-Edit-2509-Lightning-8steps-V1.0-bf16.safetensors"
     echo "--- Qwen base model downloads complete. ---"
 }
 
@@ -163,7 +171,7 @@ echo "--- All concurrent tasks are complete. ---"
 # =================================================================
 # --- SEQUENTIAL LORA DOWNLOAD PHASE ---
 # =================================================================
-# MODIFIED SECTION: The entire LoRA download phase is now conditional
+# Conditional Wan LoRA downloads
 if [[ "$MODEL_SETS" == *"wan"* ]]; then
     echo
     echo "--- Starting Sequential Download of WAN-specific LoRA Models ---"
@@ -191,7 +199,7 @@ if [[ "$MODEL_SETS" == *"wan"* ]]; then
     ## These go in /loras/lightning
     download_and_check "https://huggingface.co/lightx2v/Wan2.2-Lightning/resolve/main/Wan2.2-I2V-A14B-4steps-lora-rank64-Seko-V1/high_noise_model.safetensors" "Wan2.2-Lightning HIGH" -O "$LORA_DIR/lightning/Wan2.2-Lightning_I2V-A14B-4steps-lora_HIGH_fp16.safetensors"
     download_and_check "https://huggingface.co/lightx2v/Wan2.2-Lightning/resolve/main/Wan2.2-I2V-A14B-4steps-lora-rank64-Seko-V1/low_noise_model.safetensors" "Wan2.2-Lightning LOW" -O "$LORA_DIR/lightning/Wan2.2-Lightning_I2V-A14B-4steps-lora_LOW_fp16.safetensors"
-    download_and_check "https://huggingface.co/Kijai/WanVideo_comfy/resolve/main/LoRAs/rCM/Wan_2_1_T2V_14B_rCM_lora_average_rank_83_bf16.safetensors" "Wan2.1_T2V_rCM" -O "$LORA_DIR/lightning/Wan21_T2V_14B_rCM_lora_average_rank_83_bf16.safetensors"
+    download_and_check "https://huggingface.co/Kijai/WanVideo_comfy/resolve/main/LoRAs/rCM/Wan_2_1_T2V_14B_720p_rCM_lora_average_rank_94_bf16.safetensors" "Wan2.1_T2V_rCM" -O "$LORA_DIR/lightning/Wan_2_1_T2V_14B_720p_rCM_lora_average_rank_94_bf16.safetensors"
     download_and_check "https://huggingface.co/Kijai/WanVideo_comfy/resolve/main/LoRAs/Wan22_Lightx2v/Wan_2_2_I2V_A14B_HIGH_lightx2v_MoE_distill_lora_rank_64_bf16.safetensors" "Wan2.2_I2V_HIGH_MoE" -O "$LORA_DIR/lightning/Wan22_I2V_A14B_HIGH_lightx2v_MoE_distill_lora_rank_64_bf16.safetensors"
 
     echo "--- Downloading Civitai LoRAs ---"
