@@ -87,6 +87,9 @@ setup_custom_nodes() {
 	clone_repo https://github.com/ClownsharkBatwing/RES4LYF.git &
     clone_repo https://github.com/yuvraj108c/ComfyUI-Rife-Tensorrt &
     clone_repo https://github.com/fuselayer/comfyui-ez-dl &
+    clone_repo https://github.com/nunchaku-tech/ComfyUI-nunchaku &
+    clone_repo https://github.com/Clybius/ComfyUI-Extra-Samplers &
+    clone_repo https://github.com/kijai/ComfyUI-MMAudio &
 
 
     # Wait for all clone jobs to finish before proceeding to install requirements
@@ -122,6 +125,7 @@ download_qwen_models() {
     download_file "https://huggingface.co/QuantStack/Qwen-Image-Edit-2509-GGUF/resolve/main/Qwen-Image-Edit-2509-Q8_0.gguf" "${COMFYUI_BASE_PATH}/models/diffusion_models/Qwen-Image-Edit-2509-Q8_0.gguf"
     download_file "https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI/resolve/main/split_files/text_encoders/qwen_2.5_vl_7b_fp8_scaled.safetensors" "${COMFYUI_BASE_PATH}/models/text_encoders/qwen_2.5_vl_7b_fp8_scaled.safetensors"
     download_file "https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI/resolve/main/split_files/vae/qwen_image_vae.safetensors" "${COMFYUI_BASE_PATH}/models/vae/qwen_image_vae.safetensors"
+    # download_file "https://huggingface.co/nunchaku-tech/nunchaku-qwen-image-edit-2509/blob/main/svdq-fp4_r128-qwen-image-edit-2509.safetensors" "${COMFYUI_BASE_PATH}/models/diffusion_models/svdq-fp4_r128-qwen-image-edit-2509.safetensors"
     download_file "https://huggingface.co/lightx2v/Qwen-Image-Lightning/resolve/main/Qwen-Image-Edit-2509/Qwen-Image-Edit-2509-Lightning-4steps-V1.0-bf16.safetensors" "${COMFYUI_BASE_PATH}/models/loras/qwen/Qwen-Image-Edit-2509-Lightning-4steps-V1.0-bf16.safetensors"
     download_file "https://huggingface.co/lightx2v/Qwen-Image-Lightning/resolve/main/Qwen-Image-Edit-2509/Qwen-Image-Edit-2509-Lightning-8steps-V1.0-bf16.safetensors" "${COMFYUI_BASE_PATH}/models/loras/qwen/Qwen-Image-Edit-2509-Lightning-8steps-V1.0-bf16.safetensors"
     echo "--- Qwen base model downloads complete. ---"
@@ -210,6 +214,7 @@ if [[ "$MODEL_SETS" == *"wan"* ]]; then
     ## These go in /loras/camera
     download_and_check "https://civitai.com/api/download/models/2126538?token=${CIVITAI_API_TOKEN}" "Camera Tilt-up LOW" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/camera"
     download_and_check "https://civitai.com/api/download/models/2126493?token=${CIVITAI_API_TOKEN}" "Camera Tilt-up HIGH" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/camera"
+    download_and_check "https://huggingface.co/dx8152/Qwen-Edit-2509-Multiple-angles/blob/main/%E5%A4%9A%E8%A7%92%E5%BA%A6.safetensors" "Qwen-Edit-2509-Multiple-angles-多角度" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/camera"
 
     ## These go in /loras/futa
     download_and_check "https://civitai.com/api/download/models/2321871?token=${CIVITAI_API_TOKEN}" "FutaTF HIGH" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/futa"
