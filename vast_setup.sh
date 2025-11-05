@@ -90,6 +90,7 @@ setup_custom_nodes() {
     clone_repo https://github.com/nunchaku-tech/ComfyUI-nunchaku &
     clone_repo https://github.com/Clybius/ComfyUI-Extra-Samplers &
     clone_repo https://github.com/kijai/ComfyUI-MMAudio &
+    clone_repo https://github.com/numz/ComfyUI-SeedVR2_VideoUpscaler &
 
 
     # Wait for all clone jobs to finish before proceeding to install requirements
@@ -242,7 +243,10 @@ if [[ "$MODEL_SETS" == *"wan"* ]]; then
     download_and_check "https://civitai.com/api/download/models/2164213?token=${CIVITAI_API_TOKEN}" "Double-Blowjob HIGH" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/oral"
     download_and_check "https://civitai.com/api/download/models/2164348?token=${CIVITAI_API_TOKEN}" "Double-Blowjob LOW" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/oral"
 
+
     ## These go in /loras/sex
+    download_and_check "https://civitai.com/api/download/models/2195862?token=${CIVITAI_API_TOKEN}" "W22_NSFW_Posing_Nude_i2v_HN_v1" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/NSFW"
+    download_and_check "https://civitai.com/api/download/models/2195866?token=${CIVITAI_API_TOKEN}" "W22_NSFW_Posing_Nude_i2v_LN_v1" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/NSFW"
     download_and_check "https://civitai.com/api/download/models/2073605?token=${CIVITAI_API_TOKEN}" "NSFW-22 HIGH" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/sex"
     download_and_check "https://civitai.com/api/download/models/2083303?token=${CIVITAI_API_TOKEN}" "NSFW-22 LOW" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/sex"
     download_and_check "https://civitai.com/api/download/models/2098405?token=${CIVITAI_API_TOKEN}" "pov_missionary HIGH" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/sex"
@@ -254,6 +258,9 @@ if [[ "$MODEL_SETS" == *"wan"* ]]; then
     download_and_check "https://civitai.com/api/download/models/2190113?token=${CIVITAI_API_TOKEN}" "Anal-v1 LOW" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/sex"
     download_and_check "https://civitai.com/api/download/models/2249683?token=${CIVITAI_API_TOKEN}" "doggyslider HIGH" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/sex"
     download_and_check "https://civitai.com/api/download/models/2249697?token=${CIVITAI_API_TOKEN}" "doggyslider LOW" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/sex"
+    download_and_check "https://civitai.com/api/download/models/2273468?token=${CIVITAI_API_TOKEN}" "slop_twerk_HighNoise_merged3_7_v2" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/sex"
+    download_and_check "https://civitai.com/api/download/models/2273467?token=${CIVITAI_API_TOKEN}" "slop_twerk_LowNoise_merged3_7_v2" --user-agent="Mozilla/5.0" --content-disposition -P "$LORA_DIR/sex"
+
 
     # 3. Unzip any downloaded archives
     echo "--- Searching for and extracting .zip files ---"
